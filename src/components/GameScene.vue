@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue";
 import { Star } from "@element-plus/icons-vue";
 
 import type { CSSProperties } from "vue";
@@ -78,24 +78,39 @@ onBeforeMount((): void => {
   guessTarget.value = props.target;
 });
 
+const keyDownHandler = (ev: KeyboardEvent) => {
+  if (ev.key === "w" || ev.key === "ArrowUp") {
+    moveTarget("up");
+  } else if (ev.key === "d" || ev.key === "ArrowRight") {
+    moveTarget("right");
+  } else if (ev.key === "s" || ev.key === "ArrowDown") {
+    moveTarget("down");
+  } else if (ev.key === "a" || ev.key === "ArrowLeft") {
+    moveTarget("left");
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("keydown", keyDownHandler);
+});
+
+onBeforeMount(() => {
+  document.removeEventListener("keydown", keyDownHandler);
+});
+
 //////////
 
 const moveTarget = (direction: Direction): void => {
-  switch (direction) {
-    case "up":
-      positionY.value += MOVE_AMOUNT;
-      break;
-    case "right":
-      positionX.value -= MOVE_AMOUNT;
-      break;
-    case "down":
-      positionY.value -= MOVE_AMOUNT;
-      break;
-    case "left":
-      positionX.value += MOVE_AMOUNT;
-      break;
-    default:
-      throw new Error(`unknown direction: ${direction}`);
+  if (direction === "up" && canMoveDirections.value.includes("up")) {
+    positionY.value += MOVE_AMOUNT;
+  } else if (direction === "right" && canMoveDirections.value.includes("right")) {
+    positionX.value -= MOVE_AMOUNT;
+  } else if (direction === "down" && canMoveDirections.value.includes("down")) {
+    positionY.value -= MOVE_AMOUNT;
+  } else if (direction === "left" && canMoveDirections.value.includes("left")) {
+    positionX.value += MOVE_AMOUNT;
+  } else {
+    return;
   }
 
   moveCount.value++;
@@ -111,9 +126,17 @@ const onClickGuess = (): void => {
 </script>
 
 <template>
-  <div class="gameboard-wrapper">
+  <div
+    class="gameboard-wrapper"
+    @keydown.w="moveTarget('up')"
+    @keydown.d="moveTarget('right')"
+    @keydown.s="moveTarget('down')"
+    @keydown.a="moveTarget('left')"
+  >
     <div class="gameboard">
-      <div class="target" :style="targetStyle">{{ guessTarget }}</div>
+      <div class="target" :style="targetStyle">
+        {{ guessTarget }}
+      </div>
 
       <div class="controllers">
         <button
@@ -145,13 +168,7 @@ const onClickGuess = (): void => {
           ←
         </button>
 
-        <el-button
-          type="warning"
-          :icon="Star"
-          circle
-          class="guess-btn"
-          @click="showGuessDialog"
-        />
+        <el-button type="warning" :icon="Star" circle class="guess-btn" @click="showGuessDialog" />
       </div>
 
       <el-dialog v-model="guessDialogVisible" title="guess!" width="30%">
@@ -205,10 +222,9 @@ const onClickGuess = (): void => {
         justify-content: center;
         min-width: $min-size;
         min-height: $min-size;
-        text-shadow: -1px -1px 0 $stroke-color, -1px 0 0 $stroke-color,
-          -1px 1px 0 $stroke-color, 0 -1px 0 $stroke-color,
-          0 1px 0 $stroke-color, 1px -1px 0 $stroke-color, 1px 0 0 $stroke-color,
-          1px 1px 0 $stroke-color;
+        text-shadow: -1px -1px 0 $stroke-color, -1px 0 0 $stroke-color, -1px 1px 0 $stroke-color,
+          0 -1px 0 $stroke-color, 0 1px 0 $stroke-color, 1px -1px 0 $stroke-color,
+          1px 0 0 $stroke-color, 1px 1px 0 $stroke-color;
 
         border: none;
         background: rgba($background-color, 0.3);
