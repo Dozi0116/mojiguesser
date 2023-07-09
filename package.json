@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "element-plus": "^2.3.7",
     "vue": "^3.2.47"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
+    "normalize.css": "^8.0.1",
     "sass": "^1.63.6",
     "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.6",
