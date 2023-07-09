@@ -6,25 +6,33 @@ import { computed, ref } from "vue";
 
 import gameScene from "./components/GameScene.vue";
 
-const scene = ref("title");
-const target = ref("");
+const scene = ref<"title" | "game" | "result">("title");
+const target = ref<string>("");
+
+const moveCount = ref<number>(0);
+const result = ref<"success" | "failed" | null>(null);
 
 const kanji = ref<HTMLElement>();
 
 //////////
 
-const welcomeDialogVisible = computed(() => {
+const welcomeDialogVisible = computed((): boolean => {
   return scene.value === "title";
 });
 
-const gameSceneVisible = computed(() => {
+const gameSceneVisible = computed((): boolean => {
   return scene.value === "game";
+});
+
+const resultDialogVisible = computed((): boolean => {
+  return scene.value === "result";
 });
 
 //////////
 
-const onClickStart = () => {
-  scene.value = "game";
+const onClickStart = (): void => {
+  result.value = null;
+  target.value = "";
 
   const kanjiElement: HTMLElement | undefined = kanji.value;
   if (!kanjiElement) {
@@ -34,6 +42,20 @@ const onClickStart = () => {
 
   const kanjiList: string[] = kanjiElement.innerText.split("");
   target.value = kanjiList[Math.floor(Math.random() * kanjiList.length)];
+
+  scene.value = "game";
+};
+
+const showResult = ({
+  moveCount: emittedMoveCount,
+  answer,
+}: {
+  moveCount: number;
+  answer: string;
+}): void => {
+  moveCount.value = emittedMoveCount;
+  result.value = target.value === answer ? "success" : "failed";
+  scene.value = "result";
 };
 </script>
 
@@ -54,7 +76,23 @@ const onClickStart = () => {
       </span>
     </template>
   </el-dialog>
-  <game-scene v-if="gameSceneVisible" :target="target" />
+  <game-scene v-if="gameSceneVisible" :target="target" @guess="showResult" />
+  <el-dialog
+    v-model="resultDialogVisible"
+    title="result"
+    width="30%"
+    :show-close="false"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
+    <p>{{ result === "success" ? "正解！" : "残念…" }}</p>
+    <p>正解は{{ target }} / 移動回数は{{ moveCount }}回でした。</p>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="onClickStart">もう1回</el-button>
+      </span>
+    </template>
+  </el-dialog>
 
   <!-- FIXME: 埋め込み漢字リスト -->
   <p v-show="false" ref="kanji">

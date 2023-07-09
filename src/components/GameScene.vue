@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue";
+import { Star } from "@element-plus/icons-vue";
+
+import type { CSSProperties } from "vue";
 
 const DISPLAY_SIZE = 96; // vmin / 100 - (padding * 2)
-const TARGET_SIZE = 400; // vmin
+const TARGET_SIZE = 300; // vmin
 const MOVE_AMOUNT = 10; // vmin
 
 const REGAL_RANGE_MAX = 0;
@@ -10,28 +13,39 @@ const REGAL_RANGE_MIN = -(TARGET_SIZE - DISPLAY_SIZE);
 
 type Direction = "up" | "right" | "down" | "left";
 
+type GuessEventArg = { moveCount: number; answer: string };
+
 type Props = {
   target: string;
 };
 
+type Emits = {
+  (e: "guess", value: GuessEventArg): void;
+};
+
 const props = defineProps<Props>();
 
-//////////
-
-const guessTarget = ref("");
-const positionX = ref(0);
-const positionY = ref(0);
+const emit = defineEmits<Emits>();
 
 //////////
 
-const targetStyle = computed(() => {
+const guessTarget = ref<string>("");
+const positionX = ref<number>(0);
+const positionY = ref<number>(0);
+const moveCount = ref<number>(0);
+const guessDialogVisible = ref<boolean>(false);
+const answer = ref<string>("");
+
+//////////
+
+const targetStyle = computed<CSSProperties>(() => {
   return {
     transform: `translate(${positionX.value}vmin, ${positionY.value}vmin)`,
     "font-size": `${TARGET_SIZE}vmin`,
   };
 });
 
-const canMoveDirections = computed(() => {
+const canMoveDirections = computed<Direction[]>(() => {
   const direcitons: Direction[] = [];
 
   if (positionX.value < REGAL_RANGE_MAX) {
@@ -55,7 +69,7 @@ const canMoveDirections = computed(() => {
 
 //////////
 
-onBeforeMount(() => {
+onBeforeMount((): void => {
   const getRandom = (min: number, max: number): number =>
     Math.floor(Math.random() * (max + 1 - min)) + min;
   positionX.value = getRandom(REGAL_RANGE_MIN, REGAL_RANGE_MAX);
@@ -66,7 +80,7 @@ onBeforeMount(() => {
 
 //////////
 
-const moveTarget = (direction: Direction) => {
+const moveTarget = (direction: Direction): void => {
   switch (direction) {
     case "up":
       positionY.value += MOVE_AMOUNT;
@@ -83,6 +97,16 @@ const moveTarget = (direction: Direction) => {
     default:
       throw new Error(`unknown direction: ${direction}`);
   }
+
+  moveCount.value++;
+};
+
+const showGuessDialog = (): void => {
+  guessDialogVisible.value = true;
+};
+
+const onClickGuess = (): void => {
+  emit("guess", { moveCount: moveCount.value, answer: answer.value });
 };
 </script>
 
@@ -120,7 +144,26 @@ const moveTarget = (direction: Direction) => {
         >
           ←
         </button>
+
+        <el-button
+          type="warning"
+          :icon="Star"
+          circle
+          class="guess-btn"
+          @click="showGuessDialog"
+        />
       </div>
+
+      <el-dialog v-model="guessDialogVisible" title="guess!" width="30%">
+        <p>回答権は1回だけだよ！</p>
+        <p>あなたの回答</p>
+        <el-input v-model="answer" placeholder="範囲は常用漢字だよ" />
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button type="primary" @click="onClickGuess">guess!</el-button>
+          </span>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -213,6 +256,12 @@ const moveTarget = (direction: Direction) => {
           height: $btn-size;
           border-radius: 0 $button-border-radius $button-border-radius 0;
         }
+      }
+
+      .guess-btn {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
       }
     }
 

@@ -11,6 +11,7 @@ declare module 'vue' {
     ElCol: typeof import('element-plus/es')['ElCol']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElInput: typeof import('element-plus/es')['ElInput']
     ElRow: typeof import('element-plus/es')['ElRow']
     GameScene: typeof import('./src/components/GameScene.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
