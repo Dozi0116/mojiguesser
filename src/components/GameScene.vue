@@ -96,7 +96,7 @@ onMounted(() => {
   document.addEventListener("keydown", keyDownHandler);
 });
 
-onBeforeMount(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("keydown", keyDownHandler);
 });
 
