@@ -70,6 +70,10 @@ const showResult = ({
   >
     <p>拡大された漢字がなんという文字か、スクロールして当てよう！</p>
     <p>範囲は常用漢字だよ</p>
+    <br />
+    <p>操作方法</p>
+    <p>1: 画面クリックや十字キーで見る場所を移動</p>
+    <p>2: 右下の☆マークを押してguess!</p>
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="onClickStart">start!</el-button>
