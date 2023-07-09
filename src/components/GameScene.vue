@@ -87,6 +87,8 @@ const keyDownHandler = (ev: KeyboardEvent) => {
     moveTarget("down");
   } else if (ev.key === "a" || ev.key === "ArrowLeft") {
     moveTarget("left");
+  } else if (ev.key === "Enter") {
+    showGuessDialog();
   }
 };
 
