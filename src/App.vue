@@ -46,7 +46,8 @@ const onClickStart = () => {
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <p>拡大された漢字がなんという文字か、スクロールしながら探ろう！</p>
+    <p>拡大された漢字がなんという文字か、スクロールして当てよう！</p>
+    <p>範囲は常用漢字だよ</p>
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="onClickStart">start!</el-button>
