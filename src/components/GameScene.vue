@@ -9,7 +9,8 @@ const TARGET_SIZE = 300; // vmin
 const MOVE_AMOUNT = 10; // vmin
 
 const REGAL_RANGE_MAX = 0;
-const REGAL_RANGE_MIN = -(TARGET_SIZE - DISPLAY_SIZE);
+// noto sans JP ですべて表示できるような調整
+const REGAL_RANGE_MIN = -(TARGET_SIZE - DISPLAY_SIZE) - TARGET_SIZE / 10;
 
 type Direction = "up" | "right" | "down" | "left";
 
@@ -291,6 +292,7 @@ const onClickGuess = (): void => {
       top: 0;
       left: 0;
       transition: all 0.1s 0s ease;
+      font-family: "Noto Sans JP", sans-serif;
     }
   }
 }
