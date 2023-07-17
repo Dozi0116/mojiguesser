@@ -8,6 +8,7 @@ import gameScene from "./components/GameScene.vue";
 
 const scene = ref<"title" | "game" | "result">("title");
 const target = ref<string>("");
+const resultTarget = ref<string>(""); // 結果ダイアログ表示用
 
 const moveCount = ref<number>(0);
 const result = ref<"success" | "failed" | null>(null);
@@ -30,7 +31,7 @@ const resultDialogVisible = computed((): boolean => {
 
 //////////
 
-const onClickStart = (): void => {
+const gameStart = (): void => {
   result.value = null;
   target.value = "";
 
@@ -46,6 +47,10 @@ const onClickStart = (): void => {
   scene.value = "game";
 };
 
+const onClickStart = (): void => {
+  gameStart();
+};
+
 const showResult = ({
   moveCount: emittedMoveCount,
   answer,
@@ -55,6 +60,7 @@ const showResult = ({
 }): void => {
   moveCount.value = emittedMoveCount;
   result.value = target.value === answer ? "success" : "failed";
+  resultTarget.value = target.value;
   scene.value = "result";
 };
 </script>
@@ -90,7 +96,7 @@ const showResult = ({
     :close-on-press-escape="false"
   >
     <p>{{ result === "success" ? "正解！" : "残念…" }}</p>
-    <p>正解は{{ target }} / 移動回数は{{ moveCount }}回でした。</p>
+    <p>正解は{{ resultTarget }} / 移動回数は{{ moveCount }}回でした。</p>
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="onClickStart">もう1回</el-button>
