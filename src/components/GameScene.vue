@@ -96,13 +96,16 @@ onMounted(() => {
   document.addEventListener("keydown", keyDownHandler);
 });
 
-onBeforeMount(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("keydown", keyDownHandler);
 });
 
 //////////
 
 const moveTarget = (direction: Direction): void => {
+  // 回答中は移動させない
+  if (guessDialogVisible.value) return;
+
   if (direction === "up" && canMoveDirections.value.includes("up")) {
     positionY.value += MOVE_AMOUNT;
   } else if (direction === "right" && canMoveDirections.value.includes("right")) {
