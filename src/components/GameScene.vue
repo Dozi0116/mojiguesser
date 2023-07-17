@@ -79,8 +79,6 @@ onBeforeMount((): void => {
 });
 
 const keyDownHandler = (ev: KeyboardEvent) => {
-  if (guessDialogVisible) return;
-
   if (ev.key === "w" || ev.key === "ArrowUp") {
     moveTarget("up");
   } else if (ev.key === "d" || ev.key === "ArrowRight") {
@@ -105,6 +103,9 @@ onBeforeUnmount(() => {
 //////////
 
 const moveTarget = (direction: Direction): void => {
+  // 回答中は移動させない
+  if (guessDialogVisible.value) return;
+
   if (direction === "up" && canMoveDirections.value.includes("up")) {
     positionY.value += MOVE_AMOUNT;
   } else if (direction === "right" && canMoveDirections.value.includes("right")) {
