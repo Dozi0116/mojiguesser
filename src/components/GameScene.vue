@@ -79,6 +79,8 @@ onBeforeMount((): void => {
 });
 
 const keyDownHandler = (ev: KeyboardEvent) => {
+  if (guessDialogVisible) return;
+
   if (ev.key === "w" || ev.key === "ArrowUp") {
     moveTarget("up");
   } else if (ev.key === "d" || ev.key === "ArrowRight") {
